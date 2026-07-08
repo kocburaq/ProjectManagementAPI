@@ -1,0 +1,17 @@
+## .NET
+bin/
+obj/
+
+## SQLite runtime database
+*.db
+*.db-shm
+*.db-wal
+
+## IDE
+.vs/
+.vscode/
+.claude/
+*.user
+
+## macOS
+.DS_Store

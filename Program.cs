@@ -104,6 +104,9 @@ using (var scope = app.Services.CreateScope())
     await DataSeeder.SeedAsync(context, hasher);
 }
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())

@@ -19,14 +19,14 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,ProjectManager")]
     public async Task<ActionResult<PagedResult<UserResponseDto>>> GetAll([FromQuery] PaginationQuery query)
     {
         return Ok(await _userService.GetAllAsync(query));
     }
 
     [HttpGet("{id:int}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,ProjectManager")]
     public async Task<ActionResult<UserResponseDto>> GetById(int id)
     {
         return Ok(await _userService.GetByIdAsync(id));

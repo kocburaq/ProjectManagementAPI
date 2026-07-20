@@ -1,56 +1,57 @@
 # Project Management API
 
-Backend-odaklı bir proje/görev yönetim sistemi. ASP.NET Core Web API + EF Core (SQLite) üzerine JWT
-kimlik doğrulama, rol bazlı yetkilendirme, Repository + Service katmanları, FluentValidation ve
-Swagger dokümantasyonu ile inşa edilmiştir. (`Proje_Yonetim_Sistemi_Staj_Projesi_v1.2.pdf` teknik
-gereksinim dokümanına göre geliştirilmiştir.)
+Heweso staj programı kapsamında geliştirdiğim proje/görev yönetim sistemi. ASP.NET Core Web API +
+EF Core (SQLite) ile yazıldı; JWT ile kimlik doğrulama, rol bazlı yetkilendirme, Repository + Service
+katmanları, FluentValidation ve Swagger var. Bonus olarak API ile aynı süreçten servis edilen basit
+bir HTML/CSS/JS panel de ekledim (`wwwroot/`). Gereksinimler `Proje_Yonetim_Sistemi_Staj_Projesi_v1.2.pdf`
+dosyasında.
 
-## Teknoloji Yığını
+## Kullanılanlar
 
 - .NET 10 / ASP.NET Core Web API
 - Entity Framework Core (SQLite)
-- JWT Bearer Authentication (`Microsoft.AspNetCore.Authentication.JwtBearer`)
-- `Microsoft.AspNetCore.Identity.PasswordHasher<User>` (PBKDF2 tabanlı parola hashleme)
-- FluentValidation (+ `SharpGrip.FluentValidation.AutoValidation.Mvc` ile otomatik model doğrulama)
-- Swashbuckle / Swagger (OpenAPI 3, Bearer güvenlik şeması tanımlı)
+- JWT Bearer Authentication
+- `Microsoft.AspNetCore.Identity.PasswordHasher<User>` (parolalar PBKDF2 ile hashleniyor, düz metin hiçbir yerde yok)
+- FluentValidation + `SharpGrip.FluentValidation.AutoValidation.Mvc` (otomatik model doğrulama)
+- Swashbuckle / Swagger
 
-## Mimari
+## Klasör yapısı
 
 ```
-Controllers/   -> thin controller, sadece request/response koordinasyonu ve [Authorize] kuralları
-Services/      -> tüm iş kuralları burada (tarih/saat kısıtları, atama-üyelik kontrolü,
-                   CompletedAt/TaskHistories kuralları, yorum yetkisi, vb.)
-Repositories/  -> IUnitOfWork + entity başına repository, EF Core DbContext'i sarmalar
-Dtos/          -> Create/Update/Response için ayrı DTO'lar (Entity hiçbir zaman API'den dönmez)
-Validators/    -> FluentValidation ile DTO seviyesinde doğrulama
-Middleware/    -> global exception handling (tutarlı hata formatı)
-Security/      -> JWT üretim/ayarları
+Controllers/   -> thin controller, request/response koordinasyonu + [Authorize]
+Services/      -> iş kuralları burada (tarih/saat kısıtları, atama-üyelik kontrolü,
+                   CompletedAt/TaskHistories kuralları, yorum yetkisi vb.)
+Repositories/  -> IUnitOfWork + entity başına repository
+Dtos/          -> Create/Update/Response için ayrı DTO'lar, entity API'den hiç dönmüyor
+Validators/    -> FluentValidation
+Middleware/    -> global exception handling
+Security/      -> JWT üretimi/ayarları
 Entities/      -> EF Core entity modelleri (soft delete alanları dahil)
-Migrations/    -> EF Core migration dosyaları
-Data/          -> AppDbContext + DataSeeder (ilk çalıştırmada seed veri)
+Migrations/    -> EF Core migration'ları
+Data/          -> AppDbContext + DataSeeder
+wwwroot/       -> bonus frontend paneli
 ```
 
-## Kurulum ve Çalıştırma
+## Çalıştırma
 
 ```bash
 dotnet restore
 dotnet run
 ```
 
-Uygulama ilk açılışta otomatik olarak:
-1. `dotnet ef database update` ile aynı işi yapan `Database.MigrateAsync()` çağrısıyla migration'ları uygular (SQLite dosyası `projectmanagement.db` proje kökünde oluşturulur),
-2. Veritabanı boşsa seed verisini (`Data/DataSeeder.cs`) ekler.
+İlk çalıştırmada `Database.MigrateAsync()` migration'ları uyguluyor (SQLite dosyası proje kökünde
+`projectmanagement.db` olarak oluşuyor) ve veritabanı boşsa `Data/DataSeeder.cs` seed verisini ekliyor.
 
-Migration'ları elle uygulamak isterseniz:
+Migration'ları elle çalıştırmak istersen:
 
 ```bash
-dotnet tool install --global dotnet-ef   # ilk kurulumda
+dotnet tool install --global dotnet-ef
 dotnet ef database update
 ```
 
-Swagger UI: `http://localhost:5044/swagger` (Development ortamında).
+Swagger: `http://localhost:5044/swagger`
 
-## Test Kullanıcıları (Seed Data)
+## Test kullanıcıları
 
 | Rol | E-posta | Şifre |
 |---|---|---|
@@ -59,75 +60,94 @@ Swagger UI: `http://localhost:5044/swagger` (Development ortamında).
 | TeamMember | dev1@heweso.com | Member123! |
 | TeamMember | dev2@heweso.com | Member123! |
 
-Seed veride `pm@heweso.com` sahipliğinde bir proje, iki görev, bir yorum, bir zaman kaydı ve bir
-TaskHistory kaydı bulunur.
+Seed'de `pm@heweso.com` sahipliğinde bir proje, iki görev, bir yorum, bir zaman kaydı ve bir
+TaskHistory kaydı geliyor.
 
-### Swagger'da JWT ile test etme
+Swagger'da test etmek için: `/api/auth/login` ile giriş yapıp dönen `accessToken`'ı kopyala, sağ
+üstteki **Authorize** butonuna `Bearer <token>` şeklinde yapıştır.
 
-1. `POST /api/auth/login` ile yukarıdaki kullanıcılardan biriyle giriş yapın, dönen `accessToken`'ı kopyalayın.
-2. Swagger'ın sağ üstündeki **Authorize** düğmesine `Bearer <token>` biçiminde token'ı girin.
-3. Korumalı endpointleri doğrudan Swagger üzerinden çağırabilirsiniz.
+## Frontend paneli
 
-## Rol ve Yetki Özeti
+`dotnet run` sonrası `http://localhost:5044/` adresinden, framework kullanmadan yazdığım bir panel
+açılıyor (`app.UseStaticFiles()` ile `wwwroot/`'tan servis ediliyor). API ile aynı origin'de
+çalıştığı için ayrı bir build adımına ya da CORS ayarına gerek kalmadı, Node de gerekmiyor — sade
+`<script type="module">` ile ES module'ler kullandım, hash tabanlı basit bir router yazdım
+(`js/router.js`) ve JWT'yi `localStorage`'da tutup her istekte `Authorization` header'ına ekleyen
+bir fetch sarmalayıcım var (`js/api.js`).
 
-- **Admin**: Tüm kullanıcı/proje/görev/üyelik işlemlerini yönetir, kullanıcı aktif/pasif durumunu ve rolünü değiştirebilir.
-- **ProjectManager**: Sadece sahibi olduğu projeleri oluşturabilir/güncelleyebilir/arşivleyebilir, ekip üyesi ekleyip çıkarabilir, görev oluşturup atayabilir.
-- **TeamMember**: Üyesi olduğu projeleri ve kendisine atanan/erişebildiği görevleri görüntüler; yorum ve zaman kaydı ekleyebilir, atandığı görevin durumunu değiştirebilir.
-- Public `POST /api/auth/register` her zaman `TeamMember` rolüyle kullanıcı oluşturur; rol yükseltme yalnızca Admin'in `PUT /api/users/{id}` çağrısıyla yapılabilir (self-service rol seçimi güvenlik açığı olacağından bilinçli olarak kapatılmıştır).
+Panelde şunlar var: giriş/kayıt, proje listesi (filtre + sıralama + sayfalama) ve oluşturma, proje
+detayında düzenleme/arşivleme/silme/ekip üyesi yönetimi, görev listesi ve oluşturma, görev detayında
+düzenleme/silme/durum değiştirme/yorumlar/zaman kayıtları/geçmiş, ve Admin için kullanıcı yönetimi.
+Butonlar backend'deki yetki kurallarına göre gösteriliyor/gizleniyor (ör. "Düzenle" sadece proje
+sahibine ya da Admin'e görünüyor) ama gerçek kontrol her zaman backend'de — frontend tarafı sadece
+UX için.
 
-## Öne Çıkan İş Kuralları
+Bunun için tek şey değiştirdim backend'de: `GET /api/users`'ı Admin'in yanında ProjectManager'a da
+açtım, çünkü PM ekibine üye eklerken veya göreve birini atarken kullanıcı seçebilmesi lazım, yoksa
+panelde kullanıcıyı ID'sini bilmeden seçemiyordu. Dokümanda zaten bu endpoint için "Admin erişimi
+önerilir" yazıyor, zorunlu demiyor. Güncelleme (`PUT /api/users/{id}`) yine sadece Admin'de.
 
-- `AssignedToUserId`, ilgili projenin aktif üyesi (veya proje sahibi) değilse görev oluşturma/güncelleme reddedilir.
-- `DueDate`, projenin `StartDate` değerinden önce olamaz; `EndDate`, `StartDate`'ten önce olamaz.
-- Görev `Done` durumuna geçtiğinde `CompletedAt` otomatik set edilir; `Done`'dan geri alınırsa temizlenir.
-- Görev durumu, atanan kullanıcı veya öncelik değiştiğinde `TaskHistories` tablosuna otomatik kayıt düşülür.
-- Bir görevin gerçekleşen süresi (`ActualHours`) `TaskTimeLogs` toplamından hesaplanır; ayrı bir sütunda tutulmaz.
-- Yoruma sadece proje üyesi/sahibi ekleyebilir; yorum güncelleme/silme sadece yazan kullanıcı veya Admin tarafından yapılabilir.
-- Soft delete: `User`, `Project`, `ProjectTask`, `Comment` üzerinde `IsDeleted` alanı ve global query filter ile uygulanır. Proje silindiğinde altındaki görevler de soft-delete edilir; yorum/zaman kayıtları korunur.
+## Roller
 
-## Listeleme, Filtreleme, Sıralama
+- **Admin** — her şeye erişir, kullanıcı aktif/pasif durumunu ve rolünü değiştirebilir.
+- **ProjectManager** — sadece kendi sahibi olduğu projeleri yönetir, ekip üyesi ekler/çıkarır, görev açar ve atar.
+- **TeamMember** — üyesi olduğu projeleri ve kendine atanan görevleri görür, yorum yazabilir, zaman kaydı girebilir, atandığı görevin durumunu değiştirebilir.
 
-- Tüm liste endpointleri `page` / `pageSize` destekler (varsayılan 10, üst sınır 100).
-- `GET /api/projects`: `status`, `ownerId`, `sortBy` (`name`, `startDate`, `status`), `sortDirection`.
-- `GET /api/tasks`: `projectId`, `assignedToUserId`, `status`, `priority`, `dueBefore`, `dueAfter`, `sortBy` (`dueDate`, `priority`, `status`, `title`), `sortDirection`.
-- `GET /api/time-logs`: `taskId`, `userId`, `from`, `to`.
-- Admin olmayan kullanıcılar için proje/görev listeleri otomatik olarak "sahip olduğu veya üyesi olduğu" kayıtlarla sınırlanır.
+Public `/api/auth/register` her zaman TeamMember oluşturuyor — kayıt sırasında kendine Admin/PM rolü
+seçebilmek güvenlik açığı olurdu, o yüzden rol yükseltmeyi bilinçli olarak sadece Admin'in
+`PUT /api/users/{id}` çağrısına bıraktım.
 
-## API Uç Noktaları (özet)
+## İş kuralları
 
-| Modül | Endpoint | Açıklama |
+- `AssignedToUserId`, projenin aktif üyesi (ya da sahibi) değilse görev oluşturma/güncelleme reddediliyor.
+- `DueDate` proje `StartDate`'inden önce olamıyor, `EndDate` de `StartDate`'ten önce olamıyor.
+- Görev `Done` olunca `CompletedAt` set ediliyor, geri alınırsa temizleniyor.
+- Durum/atanan kişi/öncelik değişince `TaskHistories`'e otomatik kayıt düşüyor.
+- Görevin gerçekleşen süresi (`ActualHours`) ayrı bir kolonda tutulmuyor, `TaskTimeLogs` toplamından hesaplanıyor.
+- Yoruma sadece proje üyesi/sahibi yazabiliyor; düzenleme/silme sadece yazan kişide ya da Admin'de.
+- `Viewer` rolündeki proje üyeleri salt okunur — yorum yazamaz, zaman kaydı giremez, atandıkları görevin durumunu değiştiremez (Admin/proje sahibi bu kısıttan muaf tabii).
+- Soft delete: `User`, `Project`, `ProjectTask`, `Comment` üzerinde `IsDeleted` + global query filter var. Proje silinince altındaki görevler de soft-delete oluyor, yorum/zaman kayıtları kalıyor.
+
+## Listeleme / filtreleme / sıralama
+
+Tüm liste endpoint'leri `page` ve `pageSize` alıyor (varsayılan 10, üst sınır 100 — çok büyük
+`pageSize` istenirse kırpılıyor).
+
+- `GET /api/projects` → `status`, `ownerId`, `sortBy` (`name`/`startDate`/`status`), `sortDirection`
+- `GET /api/tasks` → `projectId`, `assignedToUserId`, `status`, `priority`, `dueBefore`, `dueAfter`, `sortBy` (`dueDate`/`priority`/`status`/`title`), `sortDirection`
+- `GET /api/time-logs` → `taskId`, `userId`, `from`, `to`
+
+Admin olmayan kullanıcılarda proje/görev listeleri otomatik olarak "sahibi olduğu veya üyesi olduğu"
+kayıtlarla sınırlanıyor, bunu ayrıca filtre olarak eklemeye gerek kalmadı.
+
+## Endpoint'ler
+
+| Modül | Endpoint | Not |
 |---|---|---|
-| Auth | `POST /api/auth/register` | Yeni TeamMember kaydı |
-| Auth | `POST /api/auth/login` | JWT access token üretir |
-| Users | `GET/PUT /api/users`, `/api/users/{id}` | Admin: listeleme, detay, güncelleme/aktif-pasif |
-| Projects | `GET/POST /api/projects`, `GET/PUT /api/projects/{id}` | Proje CRUD (Admin/ProjectManager) |
-| Projects | `PATCH /api/projects/{id}/archive`, `DELETE /api/projects/{id}` | Arşivleme / soft delete |
-| ProjectMembers | `GET/POST /api/projects/{projectId}/members`, `DELETE .../{memberId}` | Ekip üyeliği yönetimi |
-| Tasks | `GET/POST /api/tasks`, `GET/PUT /api/tasks/{id}` | Görev CRUD |
-| Tasks | `PATCH /api/tasks/{id}/status`, `DELETE /api/tasks/{id}` | Durum değişimi / soft delete |
-| Comments | `GET/POST /api/tasks/{taskId}/comments`, `PUT/DELETE /api/comments/{id}` | Yorumlar |
-| TaskHistories | `GET /api/tasks/{taskId}/histories` | Görev değişiklik geçmişi |
-| TaskTimeLogs | `GET /api/time-logs`, `POST /api/tasks/{taskId}/time-logs` | Zaman kayıtları |
+| Auth | `POST /api/auth/register` | TeamMember olarak kayıt |
+| Auth | `POST /api/auth/login` | JWT üretir |
+| Users | `GET /api/users`, `/api/users/{id}` | Admin + ProjectManager |
+| Users | `PUT /api/users/{id}` | sadece Admin |
+| Projects | `GET/POST /api/projects`, `GET/PUT /api/projects/{id}` | Admin/ProjectManager |
+| Projects | `PATCH /api/projects/{id}/archive`, `DELETE /api/projects/{id}` | arşivleme / soft delete |
+| ProjectMembers | `GET/POST /api/projects/{projectId}/members`, `DELETE .../{memberId}` | ekip üyeliği |
+| Tasks | `GET/POST /api/tasks`, `GET/PUT /api/tasks/{id}` | görev CRUD |
+| Tasks | `PATCH /api/tasks/{id}/status`, `DELETE /api/tasks/{id}` | durum / soft delete |
+| Comments | `GET/POST /api/tasks/{taskId}/comments`, `PUT/DELETE /api/comments/{id}` | yorumlar |
+| TaskHistories | `GET /api/tasks/{taskId}/histories` | görev geçmişi |
+| TaskTimeLogs | `GET /api/time-logs`, `POST /api/tasks/{taskId}/time-logs` | zaman kayıtları |
 
-## Spesifikasyonun Ötesinde Yapılan Ekler (gerekçeli)
+## Dokümanın istemediği ama eklediklerim
 
-- **CORS ("Default" policy, tüm origin'lere açık)**: Yerel geliştirmede Swagger dışı bir istemciden
-  (ör. bonus frontend) API'yi engelsiz test edebilmek için eklendi; prod için daraltılması önerilir.
-- **`UnitOfWork` deseni**: Repository'ler tek bir `AppDbContext` üzerinde çalışıp tek `SaveChangesAsync`
-  ile commit edilsin diye eklendi (ör. görev durumu değişince hem `ProjectTask` hem `TaskHistory`
-  aynı transaction'da kaydediliyor).
-- **`PagedResult<T>` / `PaginationQuery` ortak tipleri**: Tüm liste endpointlerinde tekrar eden
-  sayfalama mantığını tek yerde toplamak için eklendi.
-- **Public register her zaman `TeamMember` oluşturur**: Spesifikasyon rol seçimini netleştirmediği
-  için, kullanıcıların kendi kendine Admin/ProjectManager seçmesini engelleyen daha güvenli bir
-  varsayılan tercih edildi.
+- **CORS** — geliştirirken Swagger dışından da (bonus frontend gibi) rahat test edebilmek için açtım, production'da daraltılması lazım.
+- **UnitOfWork** — repository'ler tek `AppDbContext` üzerinde çalışıp tek `SaveChangesAsync` ile commit olsun diye (görev durumu değişince `ProjectTask` + `TaskHistory` aynı anda kaydediliyor mesela).
+- **`PagedResult<T>` / `PaginationQuery`** — her listeleme endpoint'inde aynı sayfalama kodunu tekrar yazmamak için ortak tipler.
 
-## Bilinen Sınırlamalar / Yapılmayanlar (Bonus Kapsam)
+## Eklemediklerim
 
-Bonus kapsamındaki Docker Compose, unit/integration test projesi, Serilog, frontend panel, e-posta
-bildirimleri ve CI/CD bu teslimatta yer almamaktadır; zaman kısıtı nedeniyle Zorunlu ve Orta Seviye
-kapsam önceliklendirilmiştir.
+Docker Compose, unit/integration testler, Serilog, e-posta bildirimleri, CI/CD — bunların hepsi bonus
+kapsamında ve zaman yetmedi, önceliği Zorunlu + Orta Seviye kapsama ve frontend paneline verdim.
 
-Geliştirme ortamında JWT imzalama anahtarı `appsettings.json` içinde düz metin olarak tutulmaktadır
-(`Jwt:Key`); üretim ortamında bu değerin ortam değişkeni veya secret manager üzerinden verilmesi
+Not: JWT imzalama anahtarı şu an `appsettings.json`'da düz metin (`Jwt:Key`). Geliştirme için sorun
+değil ama gerçek bir production ortamında bunu environment variable ya da secret manager'a taşımak
 gerekir.

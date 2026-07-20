@@ -190,13 +190,21 @@ public class TaskService : ITaskService
             .FirstOrDefaultAsync(t => t.Id == id)
             ?? throw new NotFoundException($"Task {id} was not found.");
 
-        var canChange = currentUser.Role == UserRole.Admin
-            || task.Project.OwnerId == currentUser.Id
-            || task.AssignedToUserId == currentUser.Id;
+        var isPrivileged = currentUser.Role == UserRole.Admin || task.Project.OwnerId == currentUser.Id;
+        var isAssignee = task.AssignedToUserId == currentUser.Id;
 
-        if (!canChange)
+        if (!isPrivileged && !isAssignee)
         {
             throw new ForbiddenException("Only the project owner, an Admin, or the assignee can change this task's status.");
+        }
+
+        if (!isPrivileged && isAssignee)
+        {
+            var membership = task.Project.Members.FirstOrDefault(m => m.UserId == currentUser.Id && m.IsActive);
+            if (membership?.Role == ProjectMemberRole.Viewer)
+            {
+                throw new ForbiddenException("Viewers are not allowed to update task status.");
+            }
         }
 
         if (dto.Status == task.Status)

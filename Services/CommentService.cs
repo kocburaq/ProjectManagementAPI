@@ -43,7 +43,7 @@ public class CommentService : ICommentService
 
     public async Task<CommentResponseDto> CreateAsync(int taskId, CreateCommentDto dto, CurrentUser currentUser)
     {
-        await EnsureTaskAccessibleAsync(taskId, currentUser);
+        await EnsureCanCommentAsync(taskId, currentUser);
 
         var comment = new Comment
         {
@@ -105,6 +105,31 @@ public class CommentService : ICommentService
         if (!hasAccess)
         {
             throw new ForbiddenException("Only a project member or the project owner can comment on this task.");
+        }
+    }
+
+    private async Task EnsureCanCommentAsync(int taskId, CurrentUser currentUser)
+    {
+        var task = await _unitOfWork.Tasks.Query()
+            .Include(t => t.Project)
+            .ThenInclude(p => p.Members)
+            .FirstOrDefaultAsync(t => t.Id == taskId)
+            ?? throw new NotFoundException($"Task {taskId} was not found.");
+
+        if (currentUser.Role == UserRole.Admin || task.Project.OwnerId == currentUser.Id)
+        {
+            return;
+        }
+
+        var membership = task.Project.Members.FirstOrDefault(m => m.UserId == currentUser.Id && m.IsActive);
+        if (membership == null)
+        {
+            throw new ForbiddenException("Only a project member or the project owner can comment on this task.");
+        }
+
+        if (membership.Role == ProjectMemberRole.Viewer)
+        {
+            throw new ForbiddenException("Viewers are not allowed to comment on tasks.");
         }
     }
 

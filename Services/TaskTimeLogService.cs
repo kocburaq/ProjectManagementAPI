@@ -77,13 +77,17 @@ public class TaskTimeLogService : ITaskTimeLogService
             .FirstOrDefaultAsync(t => t.Id == taskId)
             ?? throw new NotFoundException($"Task {taskId} was not found.");
 
-        var hasAccess = currentUser.Role == UserRole.Admin
-            || task.Project.OwnerId == currentUser.Id
-            || task.Project.Members.Any(m => m.UserId == currentUser.Id && m.IsActive);
+        var isPrivileged = currentUser.Role == UserRole.Admin || task.Project.OwnerId == currentUser.Id;
+        var membership = task.Project.Members.FirstOrDefault(m => m.UserId == currentUser.Id && m.IsActive);
 
-        if (!hasAccess)
+        if (!isPrivileged && membership == null)
         {
             throw new ForbiddenException("You are not authorized to log time on this task.");
+        }
+
+        if (!isPrivileged && membership!.Role == ProjectMemberRole.Viewer)
+        {
+            throw new ForbiddenException("Viewers are not allowed to log time on tasks.");
         }
 
         if (dto.Hours <= 0)

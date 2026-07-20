@@ -1,7 +1,6 @@
 namespace ProjectManagementAPI.Dtos.Auth;
 
-// Public self-registration always creates a TeamMember. Promoting a user to
-// ProjectManager/Admin is an Admin-only action via PUT /api/users/{id}.
+// register her zaman TeamMember üretir, rol yükseltme PUT /api/users/{id} ile Admin'de kalıyor
 public class RegisterRequestDto
 {
     public string FirstName { get; set; } = string.Empty;

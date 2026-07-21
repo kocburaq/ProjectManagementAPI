@@ -11,6 +11,7 @@ import {
   alertHtml,
   escapeHtml,
   formatDate,
+  linkDateRange,
   projectStatusBadge,
   PROJECT_STATUSES,
 } from "../utils.js";
@@ -215,6 +216,8 @@ export async function renderProjects(el) {
     document.getElementById("cancel-create-project").addEventListener("click", closeModal);
 
     const form = document.getElementById("create-project-form");
+    linkDateRange(document.getElementById("p-start"), document.getElementById("p-end"));
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const alertBox = document.getElementById("create-project-alert");
@@ -229,6 +232,11 @@ export async function renderProjects(el) {
       };
       if (isAdmin() && form.ownerId && form.ownerId.value) {
         dto.ownerId = parseInt(form.ownerId.value, 10);
+      }
+
+      if (dto.endDate && dto.endDate < dto.startDate) {
+        alertBox.innerHTML = alertHtml("Bitiş tarihi başlangıç tarihinden önce olamaz.");
+        return;
       }
 
       const submitBtn = form.querySelector("button[type=submit]");

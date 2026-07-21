@@ -13,6 +13,7 @@ import {
   formatDate,
   formatDateTime,
   toInputDate,
+  linkDateRange,
   projectStatusBadge,
   taskStatusBadge,
   taskPriorityBadge,
@@ -180,6 +181,8 @@ function openEditModal(project) {
   document.getElementById("cancel-edit-project").addEventListener("click", closeModal);
 
   const form = document.getElementById("edit-project-form");
+  linkDateRange(document.getElementById("ep-start"), document.getElementById("ep-end"));
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const alertBox = document.getElementById("edit-project-alert");
@@ -193,6 +196,11 @@ function openEditModal(project) {
       endDate: form.endDate.value || null,
       status: parseInt(form.status.value, 10),
     };
+
+    if (dto.endDate && dto.endDate < dto.startDate) {
+      alertBox.innerHTML = alertHtml("Bitiş tarihi başlangıç tarihinden önce olamaz.");
+      return;
+    }
 
     const submitBtn = form.querySelector("button[type=submit]");
     submitBtn.disabled = true;

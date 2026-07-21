@@ -153,6 +153,36 @@ export function renderPagination(container, page, totalPages, onChange) {
   });
 }
 
+// Bitiş tarihi inputunun takviminde başlangıçtan önceki günleri seçilemez yapar.
+// Başlangıç sonradan değişip mevcut bitiş tarihini geçersiz kılarsa bitişi temizler.
+export function linkDateRange(startInput, endInput) {
+  if (!startInput || !endInput) return;
+
+  const sync = () => {
+    if (startInput.value) {
+      endInput.min = startInput.value;
+      if (endInput.value && endInput.value < startInput.value) {
+        endInput.value = "";
+      }
+    } else {
+      endInput.removeAttribute("min");
+    }
+  };
+
+  // Takvimde min'in altındaki günler tarayıcıya göre yine de tıklanabiliyor;
+  // bitiş alanı değiştiği anda burada da kontrol edip anında geri alıyoruz.
+  const guardEnd = () => {
+    if (startInput.value && endInput.value && endInput.value < startInput.value) {
+      endInput.value = "";
+      toast("Bitiş tarihi başlangıç tarihinden önce olamaz.", "error");
+    }
+  };
+
+  sync();
+  startInput.addEventListener("change", sync);
+  endInput.addEventListener("change", guardEnd);
+}
+
 export function showFieldErrors(formEl, fieldErrors) {
   if (!fieldErrors) return;
   Object.entries(fieldErrors).forEach(([field, msgs]) => {

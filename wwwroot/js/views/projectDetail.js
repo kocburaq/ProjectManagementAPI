@@ -13,7 +13,6 @@ import {
   formatDate,
   formatDateTime,
   toInputDate,
-  linkDateRange,
   projectStatusBadge,
   taskStatusBadge,
   taskPriorityBadge,
@@ -181,13 +180,36 @@ function openEditModal(project) {
   document.getElementById("cancel-edit-project").addEventListener("click", closeModal);
 
   const form = document.getElementById("edit-project-form");
-  linkDateRange(document.getElementById("ep-start"), document.getElementById("ep-end"));
+  const startDateInput = form.elements.startDate;
+  const endDateInput = form.elements.endDate;
+
+  const syncEndDateMinimum = () => {
+    if (startDateInput.value) {
+      endDateInput.setAttribute("min", startDateInput.value);
+    } else {
+      endDateInput.removeAttribute("min");
+    }
+
+    if (endDateInput.value && endDateInput.value < startDateInput.value) {
+      endDateInput.value = "";
+    }
+  };
+
+  startDateInput.addEventListener("input", syncEndDateMinimum);
+  startDateInput.addEventListener("change", syncEndDateMinimum);
+  syncEndDateMinimum();
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const alertBox = document.getElementById("edit-project-alert");
     alertBox.innerHTML = "";
     form.querySelectorAll(".field-error").forEach((n) => n.remove());
+
+    syncEndDateMinimum();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
 
     const dto = {
       name: form.name.value.trim(),
@@ -196,11 +218,6 @@ function openEditModal(project) {
       endDate: form.endDate.value || null,
       status: parseInt(form.status.value, 10),
     };
-
-    if (dto.endDate && dto.endDate < dto.startDate) {
-      alertBox.innerHTML = alertHtml("Bitiş tarihi başlangıç tarihinden önce olamaz.");
-      return;
-    }
 
     const submitBtn = form.querySelector("button[type=submit]");
     submitBtn.disabled = true;

@@ -11,7 +11,6 @@ import {
   alertHtml,
   escapeHtml,
   formatDate,
-  linkDateRange,
   projectStatusBadge,
   PROJECT_STATUSES,
 } from "../utils.js";
@@ -216,13 +215,36 @@ export async function renderProjects(el) {
     document.getElementById("cancel-create-project").addEventListener("click", closeModal);
 
     const form = document.getElementById("create-project-form");
-    linkDateRange(document.getElementById("p-start"), document.getElementById("p-end"));
+    const startDateInput = form.elements.startDate;
+    const endDateInput = form.elements.endDate;
+
+    const syncEndDateMinimum = () => {
+      if (startDateInput.value) {
+        endDateInput.setAttribute("min", startDateInput.value);
+      } else {
+        endDateInput.removeAttribute("min");
+      }
+
+      if (endDateInput.value && endDateInput.value < startDateInput.value) {
+        endDateInput.value = "";
+      }
+    };
+
+    startDateInput.addEventListener("input", syncEndDateMinimum);
+    startDateInput.addEventListener("change", syncEndDateMinimum);
+    syncEndDateMinimum();
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const alertBox = document.getElementById("create-project-alert");
       alertBox.innerHTML = "";
       form.querySelectorAll(".field-error").forEach((n) => n.remove());
+
+      syncEndDateMinimum();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
 
       const dto = {
         name: form.name.value.trim(),
@@ -232,11 +254,6 @@ export async function renderProjects(el) {
       };
       if (isAdmin() && form.ownerId && form.ownerId.value) {
         dto.ownerId = parseInt(form.ownerId.value, 10);
-      }
-
-      if (dto.endDate && dto.endDate < dto.startDate) {
-        alertBox.innerHTML = alertHtml("Bitiş tarihi başlangıç tarihinden önce olamaz.");
-        return;
       }
 
       const submitBtn = form.querySelector("button[type=submit]");

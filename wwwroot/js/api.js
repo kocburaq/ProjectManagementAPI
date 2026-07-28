@@ -2,12 +2,17 @@ const BASE = "/api";
 const SESSION_KEY = "pmapi_session";
 
 export class ApiError extends Error {
-  constructor(message, status, fieldErrors) {
+  constructor(message, status, fieldErrors, code) {
     super(message);
     this.status = status;
     this.fieldErrors = fieldErrors || null;
+    this.code = code || null;
   }
 }
+
+// Sunucudan gelen makine-okunur oturum kodları
+export const SESSION_REVOKED = "SESSION_REVOKED";
+export const SESSION_ALREADY_ACTIVE = "SESSION_ALREADY_ACTIVE";
 
 export function getSession() {
   const raw = localStorage.getItem(SESSION_KEY);
@@ -90,12 +95,26 @@ export async function apiFetch(path, { method = "GET", body, query } = {}) {
   }
 
   if (!res.ok) {
+    // Sunucu PascalCase (Code) döner; küçük harfli hâlini de destekliyoruz.
+    const code = (payload && (payload.Code || payload.code)) || null;
+
     if (res.status === 401) {
+      // Oturum başka bir cihazdan devralındıysa kullanıcıya nedenini söyleyebilmek için
+      // sebebi saklayıp login ekranında gösteriyoruz.
+      if (code === SESSION_REVOKED) {
+        try {
+          sessionStorage.setItem(
+            "pmapi_logout_reason",
+            "Oturumunuz sonlandırıldı. Bu hesapla başka bir cihazdan giriş yapılmış olabilir."
+          );
+        } catch { /* yoksay */ }
+      }
       clearSession();
     }
+
     const message = extractMessage(payload, `İstek başarısız oldu (${res.status}).`);
     const fieldErrors = payload && payload.errors ? payload.errors : null;
-    throw new ApiError(message, res.status, fieldErrors);
+    throw new ApiError(message, res.status, fieldErrors, code);
   }
 
   return payload;

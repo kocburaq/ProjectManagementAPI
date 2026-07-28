@@ -47,7 +47,8 @@ public class ExceptionHandlingMiddleware
         var response = new ApiErrorResponse
         {
             Message = message,
-            StatusCode = (int)statusCode
+            StatusCode = (int)statusCode,
+            Code = (exception as ConflictException)?.Code
         };
 
         context.Response.ContentType = "application/json";

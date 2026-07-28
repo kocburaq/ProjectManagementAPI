@@ -3,13 +3,39 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Heweso Proje Yönetim Sistemi</title>
-  <link rel="stylesheet" href="css/styles.css" />
+  <meta name="theme-color" content="#04060c" />
+  <title>Batman PM - Proje Yönetim Sistemi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <link rel="stylesheet" href="css/styles.css?v=20260728-4" />
 </head>
 <body>
+  <!-- ===== Dekoratif Gotham katmanı (işlevsiz, sadece görsel) ===== -->
+  <div class="gotham-fx" aria-hidden="true">
+    <div class="bat-signal-beam"></div>
+    <div class="bat-signal-disc"></div>
+    <div class="lightning"></div>
+    <div class="skyline"></div>
+  </div>
+
+  <!-- ===== Uçan yarasa sürüsü ===== -->
+  <div class="bat-swarm" aria-hidden="true">
+    <div class="bat"><svg viewBox="0 0 64 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M32 6c-2-3-4-4-6-2-4-5-12-6-18-3 3 2 3 5 1 7-3-2-7-2-9 1 5 0 8 3 8 7 4-3 9-3 12 0l3-4 3 5 3-5 3 4c3-3 8-3 12 0 0-4 3-7 8-7-2-3-6-3-9-1-2-2-2-5 1-7-6-3-14-2-18 3-2-2-4-1-6 2z"/></svg></div>
+    <div class="bat"><svg viewBox="0 0 64 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M32 6c-2-3-4-4-6-2-4-5-12-6-18-3 3 2 3 5 1 7-3-2-7-2-9 1 5 0 8 3 8 7 4-3 9-3 12 0l3-4 3 5 3-5 3 4c3-3 8-3 12 0 0-4 3-7 8-7-2-3-6-3-9-1-2-2-2-5 1-7-6-3-14-2-18 3-2-2-4-1-6 2z"/></svg></div>
+    <div class="bat"><svg viewBox="0 0 64 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M32 6c-2-3-4-4-6-2-4-5-12-6-18-3 3 2 3 5 1 7-3-2-7-2-9 1 5 0 8 3 8 7 4-3 9-3 12 0l3-4 3 5 3-5 3 4c3-3 8-3 12 0 0-4 3-7 8-7-2-3-6-3-9-1-2-2-2-5 1-7-6-3-14-2-18 3-2-2-4-1-6 2z"/></svg></div>
+    <div class="bat"><svg viewBox="0 0 64 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M32 6c-2-3-4-4-6-2-4-5-12-6-18-3 3 2 3 5 1 7-3-2-7-2-9 1 5 0 8 3 8 7 4-3 9-3 12 0l3-4 3 5 3-5 3 4c3-3 8-3 12 0 0-4 3-7 8-7-2-3-6-3-9-1-2-2-2-5 1-7-6-3-14-2-18 3-2-2-4-1-6 2z"/></svg></div>
+    <div class="bat"><svg viewBox="0 0 64 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M32 6c-2-3-4-4-6-2-4-5-12-6-18-3 3 2 3 5 1 7-3-2-7-2-9 1 5 0 8 3 8 7 4-3 9-3 12 0l3-4 3 5 3-5 3 4c3-3 8-3 12 0 0-4 3-7 8-7-2-3-6-3-9-1-2-2-2-5 1-7-6-3-14-2-18 3-2-2-4-1-6 2z"/></svg></div>
+  </div>
+
   <header class="topbar">
     <div class="topbar-inner">
-      <a href="#/projects" class="brand">Heweso <span>PM</span></a>
+      <a href="#/projects" class="brand">
+        <svg class="batman-logo" viewBox="0 0 200 84" style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#ffd23f" d="M100 10c-4 0-7 4-8 10-8-10-24-16-40-14 4 6 4 12 0 16-12-8-32-8-44 2 14 0 22 8 22 18 0 6-2 10-6 14 12-4 24-2 32 6 4-8 12-12 20-10l-6 12 12-6 6 10 6-10 12 6-6-12c8-2 16 2 20 10 8-8 20-10 32-6-4-4-6-8-6-14 0-10 8-18 22-18-12-10-32-10-44-2-4-4-4-10 0-16-16-2-32 4-40 14-1-6-4-10-8-10z"/>
+        </svg>
+        BATMAN <span>PM</span>
+      </a>
       <nav id="nav-links" class="nav-links"></nav>
       <div id="nav-user" class="nav-user"></div>
     </div>
@@ -17,6 +43,6 @@
 
   <main id="app" class="container"></main>
 
-  <script type="module" src="js/main.js?v=20260721-2"></script>
+  <script type="module" src="js/main.js?v=20260728-4"></script>
 </body>
 </html>

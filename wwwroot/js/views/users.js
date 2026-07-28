@@ -20,7 +20,7 @@ export async function renderUsers(el) {
   el.innerHTML = `
     <div class="page-header">
       <div>
-        <h1>Kullanıcılar</h1>
+        <h2 style="color: #ffc107; text-shadow: 0 0 15px rgba(255, 193, 7, 0.3); text-transform: uppercase; letter-spacing: 1px;">👥 Kullanıcılar</h2>
         <div class="page-subtitle">Tüm sistem kullanıcıları. Rol ve aktif/pasif durumunu Admin değiştirebilir.</div>
       </div>
     </div>

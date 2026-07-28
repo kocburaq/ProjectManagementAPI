@@ -1,4 +1,4 @@
-import { getSession, clearSession } from "./api.js";
+import { getSession, clearSession, apiFetch } from "./api.js";
 
 export const ROLE_ADMIN = 1;
 export const ROLE_PROJECT_MANAGER = 2;
@@ -34,7 +34,42 @@ export function canManageProject(project) {
   return user.role === ROLE_ADMIN || project.ownerId === user.id;
 }
 
-export function logout() {
+/**
+ * Çıkış yapar. Sunucudaki oturumu da serbest bırakır — bu yapılmazsa
+ * eşzamanlı oturum kuralı yüzünden aynı hesapla tekrar giriş yapılamaz
+ * (boşta kalma süresi dolana kadar).
+ */
+export async function logout({ silent = false } = {}) {
+  try {
+    await apiFetch("/auth/logout", { method: "POST" });
+  } catch {
+    // Sunucuya ulaşılamasa bile yerel oturumu temizliyoruz;
+    // sunucudaki oturum boşta kalma süresi dolunca kendiliğinden serbest kalır.
+  }
+
   clearSession();
-  location.hash = "#/login";
+
+  if (!silent) {
+    window.dispatchEvent(new Event("pmapi:auth-changed"));
+
+    // Zaten #/login'deysek hash değişmez, dolayısıyla hashchange tetiklenmez;
+    // bu durumda görünümü elle tazelemek gerekiyor.
+    if (location.hash === "#/login") {
+      const { rerender } = await import("./router.js");
+      rerender();
+    } else {
+      location.hash = "#/login";
+    }
+  }
+}
+
+/** Login/register ekranında gösterilecek "neden çıkış yaptın" mesajını alır ve tüketir. */
+export function takeLogoutReason() {
+  try {
+    const reason = sessionStorage.getItem("pmapi_logout_reason");
+    if (reason) sessionStorage.removeItem("pmapi_logout_reason");
+    return reason;
+  } catch {
+    return null;
+  }
 }

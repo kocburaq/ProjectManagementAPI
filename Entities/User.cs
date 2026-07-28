@@ -27,6 +27,19 @@ public class User
 
     public bool IsDeleted { get; set; } = false;
 
+    // ---- Eşzamanlı oturum kontrolü ----
+    // Aktif oturumun kimliği. Token'daki "sid" claim'i ile eşleşmeyen istekler reddedilir.
+    // null ise kullanıcının açık oturumu yoktur.
+    [JsonIgnore]
+    public string? SessionId { get; set; }
+
+    [JsonIgnore]
+    public DateTime? SessionStartedAt { get; set; }
+
+    // Her doğrulanmış istekte (kısıtlı sıklıkta) güncellenir; boşta kalan oturumu tespit etmek için.
+    [JsonIgnore]
+    public DateTime? SessionLastSeenAt { get; set; }
+
     [JsonIgnore]
     public ICollection<Project> OwnedProjects { get; set; } = new List<Project>();
 

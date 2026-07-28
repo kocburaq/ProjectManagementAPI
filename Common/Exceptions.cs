@@ -13,6 +13,9 @@ public class ForbiddenException : Exception
 public class ConflictException : Exception
 {
     public ConflictException(string message) : base(message) { }
+
+    /// <summary>İstemcinin ayırt edebilmesi için opsiyonel makine-okunur kod.</summary>
+    public string? Code { get; init; }
 }
 
 public class BusinessRuleException : Exception

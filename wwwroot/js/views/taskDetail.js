@@ -47,15 +47,15 @@ export async function renderTaskDetail(el, params) {
   const canChangeStatus = manage || isAssignee;
 
   el.innerHTML = `
-    <p><a href="#/projects/${task.projectId}">&larr; ${project ? escapeHtml(project.name) : "Proje"}</a></p>
+    <p><a href="#/projects/${task.projectId}" style="color: #ffc107; font-weight: 600;">← ${project ? escapeHtml(project.name) : "Proje"}</a></p>
     <div class="page-header">
       <div>
-        <h1>${escapeHtml(task.title)}</h1>
+        <h1 style="color: #ffc107; text-shadow: 0 0 15px rgba(255, 193, 7, 0.3); text-transform: uppercase; letter-spacing: 1px;">📋 ${escapeHtml(task.title)}</h1>
         <div class="page-subtitle">${taskStatusBadge(task.status)} ${taskPriorityBadge(task.priority)}</div>
       </div>
       <div class="page-actions">
-        ${manage ? '<button id="edit-task-btn" class="btn btn-ghost" type="button">Düzenle</button>' : ""}
-        ${manage ? '<button id="delete-task-btn" class="btn btn-danger" type="button">Sil</button>' : ""}
+        ${manage ? '<button id="edit-task-btn" class="btn btn-ghost" type="button">✏️ Düzenle</button>' : ""}
+        ${manage ? '<button id="delete-task-btn" class="btn btn-danger" type="button">🗑️ Sil</button>' : ""}
       </div>
     </div>
 

@@ -42,11 +42,11 @@ export async function renderTasks(el) {
   el.innerHTML = `
     <div class="page-header">
       <div>
-        <h1>Görevler</h1>
+        <h2 style="color: #ffc107; text-shadow: 0 0 15px rgba(255, 193, 7, 0.3); text-transform: uppercase; letter-spacing: 1px;">⚡ Görevler</h2>
         <div class="page-subtitle">Erişebildiğiniz projelerdeki tüm görevler.</div>
       </div>
       <div class="page-actions">
-        ${isAdminOrPM() ? '<button id="new-task-btn" class="btn btn-primary" type="button">+ Yeni Görev</button>' : ""}
+        ${isAdminOrPM() ? '<button id="new-task-btn" class="btn btn-primary" type="button">⚡ Yeni Görev</button>' : ""}
       </div>
     </div>
     <div class="filters">

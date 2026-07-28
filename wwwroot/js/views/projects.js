@@ -20,13 +20,30 @@ const state = { page: 1, pageSize: 10, status: "", sortBy: "createdAt", sortDire
 
 export async function renderProjects(el) {
   el.innerHTML = `
+    <div style="background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 50%); border-radius: 8px; padding: 30px 20px; margin-bottom: 30px; text-align: center; border: 2px solid #ffc107; box-shadow: 0 8px 32px rgba(255, 193, 7, 0.15);">
+      <div style="max-width: 200px; margin: 0 auto; animation: pulse 2s ease-in-out infinite;">
+        <svg viewBox="0 0 200 200" style="width: 100%; height: auto; filter: drop-shadow(0 0 20px rgba(255, 193, 7, 0.4));">
+          <g fill="#ffc107">
+            <ellipse cx="100" cy="60" rx="45" ry="50"/>
+            <polygon points="55,100 55,150 145,150 145,100"/>
+            <polygon points="70,120 70,160 60,160 60,120"/>
+            <polygon points="130,120 130,160 140,160 140,120"/>
+            <circle cx="90" cy="80" r="6" fill="#0a0e27"/>
+            <circle cx="110" cy="80" r="6" fill="#0a0e27"/>
+          </g>
+        </svg>
+      </div>
+      <h1 style="color: #ffc107; margin: 20px 0 10px 0; text-shadow: 0 0 20px rgba(255, 193, 7, 0.4); font-size: 32px; text-transform: uppercase; letter-spacing: 2px;">BATMAN PM</h1>
+      <div style="color: #9399bb; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Proje Yönetim Sistemi</div>
+    </div>
+
     <div class="page-header">
       <div>
-        <h1>Projeler</h1>
+        <h2 style="color: #ffc107; text-shadow: 0 0 15px rgba(255, 193, 7, 0.3); text-transform: uppercase; letter-spacing: 1px;">Projeler</h2>
         <div class="page-subtitle">Sahip olduğunuz veya üyesi olduğunuz projeler.</div>
       </div>
       <div class="page-actions">
-        ${isAdminOrPM() ? '<button id="new-project-btn" class="btn btn-primary" type="button">+ Yeni Proje</button>' : ""}
+        ${isAdminOrPM() ? '<button id="new-project-btn" class="btn btn-primary" type="button">⚡ Yeni Proje</button>' : ""}
       </div>
     </div>
     <div class="filters">
@@ -116,15 +133,15 @@ export async function renderProjects(el) {
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>Proje</th><th>Durum</th><th>Sahip</th><th>Başlangıç</th><th>Bitiş</th><th></th></tr>
+            <tr><th>⚡ Proje</th><th>Durum</th><th>Sahip</th><th>Başlangıç</th><th>Bitiş</th><th></th></tr>
           </thead>
           <tbody>
             ${result.items
               .map(
                 (p) => `
-              <tr class="row-link" data-id="${p.id}">
+              <tr class="row-link" data-id="${p.id}" style="transition: all 0.2s ease;">
                 <td>
-                  <div style="font-weight:600;">${escapeHtml(p.name)}${
+                  <div style="font-weight:700; color: #ffc107;">${escapeHtml(p.name)}${
                   p.isArchived ? ' <span class="badge badge-gray">Arşivde</span>' : ""
                 }</div>
                   ${
@@ -137,7 +154,7 @@ export async function renderProjects(el) {
                 <td>${escapeHtml(p.ownerName)}</td>
                 <td class="nowrap">${formatDate(p.startDate)}</td>
                 <td class="nowrap">${formatDate(p.endDate)}</td>
-                <td class="text-right"><a href="#/projects/${p.id}">Detay &rsaquo;</a></td>
+                <td class="text-right"><a href="#/projects/${p.id}" style="color: #ffc107; font-weight: 600;">Detay ⚡</a></td>
               </tr>
             `
               )
@@ -169,7 +186,7 @@ export async function renderProjects(el) {
     }
 
     openModal(
-      "Yeni Proje",
+      "⚡ Yeni Proje",
       `
       <form id="create-project-form">
         <div class="form-row">
@@ -206,7 +223,7 @@ export async function renderProjects(el) {
         <div id="create-project-alert"></div>
         <div class="form-actions">
           <button type="button" class="btn btn-ghost" id="cancel-create-project">Vazgeç</button>
-          <button type="submit" class="btn btn-primary">Oluştur</button>
+          <button type="submit" class="btn btn-primary">⚡ Oluştur</button>
         </div>
       </form>
     `

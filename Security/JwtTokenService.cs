@@ -16,7 +16,7 @@ public class JwtTokenService : IJwtTokenService
         _settings = settings.Value;
     }
 
-    public string GenerateToken(User user, out DateTime expiresAt)
+    public string GenerateToken(User user, string sessionId, out DateTime expiresAt)
     {
         var claims = new[]
         {
@@ -25,7 +25,9 @@ public class JwtTokenService : IJwtTokenService
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
             new Claim(ClaimTypes.Role, user.Role.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            // Eşzamanlı oturum kontrolünün dayanağı
+            new Claim(SessionClaims.SessionId, sessionId)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Key));

@@ -38,20 +38,20 @@ export async function renderProjectDetail(el, params) {
   const manage = canManageProject(project);
 
   el.innerHTML = `
-    <p><a href="#/projects">&larr; Projeler</a></p>
+    <p><a href="#/projects" style="color: #ffc107; font-weight: 600;">← Projeler</a></p>
     <div class="page-header">
       <div>
-        <h1>${escapeHtml(project.name)} ${project.isArchived ? '<span class="badge badge-gray">Arşivde</span>' : ""}</h1>
+        <h1 style="color: #ffc107; text-shadow: 0 0 15px rgba(255, 193, 7, 0.3); text-transform: uppercase; letter-spacing: 1px;">⚡ ${escapeHtml(project.name)} ${project.isArchived ? '<span class="badge badge-gray">Arşivde</span>' : ""}</h1>
         <div class="page-subtitle">${projectStatusBadge(project.status)}</div>
       </div>
       <div class="page-actions">
-        ${manage ? '<button id="edit-project-btn" class="btn btn-ghost" type="button">Düzenle</button>' : ""}
+        ${manage ? '<button id="edit-project-btn" class="btn btn-ghost" type="button">✏️ Düzenle</button>' : ""}
         ${
           manage && !project.isArchived
-            ? '<button id="archive-project-btn" class="btn btn-ghost" type="button">Arşivle</button>'
+            ? '<button id="archive-project-btn" class="btn btn-ghost" type="button">📦 Arşivle</button>'
             : ""
         }
-        ${manage ? '<button id="delete-project-btn" class="btn btn-danger" type="button">Sil</button>' : ""}
+        ${manage ? '<button id="delete-project-btn" class="btn btn-danger" type="button">🗑️ Sil</button>' : ""}
       </div>
     </div>
 

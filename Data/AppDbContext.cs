@@ -33,6 +33,7 @@ public class AppDbContext : DbContext
             entity.Property(u => u.LastName).IsRequired().HasMaxLength(50);
             entity.Property(u => u.Email).IsRequired().HasMaxLength(256);
             entity.Property(u => u.Department).HasMaxLength(100);
+            entity.Property(u => u.SessionId).HasMaxLength(64);
             entity.HasIndex(u => u.Email).IsUnique();
             entity.HasQueryFilter(u => !u.IsDeleted);
         });

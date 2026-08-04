@@ -101,7 +101,41 @@ TaskHistory kaydı geliyor.
 Swagger'da test etmek için: `/api/auth/login` ile giriş yapıp dönen `accessToken`'ı kopyala, sağ
 üstteki **Authorize** butonuna `Bearer <token>` şeklinde yapıştır.
 
-## Frontend paneli
+## React arayüzü (`frontend/`)
+
+Repo'da iki ayrı frontend var:
+
+| | Nerede | Nasıl çalışır |
+|---|---|---|
+| **Nexus (React)** | `frontend/` | Ayrı Vite dev sunucusu (`http://localhost:5173`), API'ye CORS üzerinden bağlanır |
+| **wwwroot paneli** | `wwwroot/` | API ile aynı origin'den servis edilir (`http://localhost:5044/`) |
+
+`frontend/` altındaki **Nexus**, aynı API üzerine yazılmış modern bir SaaS proje yönetim
+arayüzü: React 19 + TypeScript + Vite + Tailwind v4 + shadcn/ui deseni + TanStack Query +
+React Hook Form/Zod + Recharts + dnd-kit. Dashboard, projeler, proje detayı, Kanban panosu,
+görevler, görevlerim, takvim, zaman kayıtları, ekip, raporlar, profil ve ayarlar ekranları
+var; açık/koyu tema ve mobil uyumlu düzen destekliyor.
+
+```bash
+# 1. terminal — backend
+dotnet run --launch-profile localhost-only     # http://localhost:5044
+
+# 2. terminal — arayüz
+cd frontend
+cp .env.example .env
+npm install
+npm run dev                                    # http://localhost:5173
+```
+
+Ayrıntılı kurulum, mimari ve ekran açıklamaları: [`frontend/README.md`](frontend/README.md).
+Arayüz için gerekli olup API'de bulunmayan uçların raporu:
+[`FRONTEND_API_GAPS.md`](FRONTEND_API_GAPS.md). Bu arayüz için backend'de **hiçbir değişiklik
+yapılmadı**; Development ortamında CORS zaten `AllowAnyOrigin` olduğu için ek ayar da gerekmedi.
+
+> Not: "aynı anda tek oturum" kuralı gereği aynı hesapla hem wwwroot panelinde hem React
+> arayüzünde aynı anda oturum açılamaz — biri `409 SESSION_ALREADY_ACTIVE` alır.
+
+## Frontend paneli (wwwroot, bonus)
 
 `dotnet run` sonrası `http://localhost:5044/` adresinden, framework kullanmadan yazdığım bir panel
 açılıyor (`app.UseStaticFiles()` ile `wwwroot/`'tan servis ediliyor). API ile aynı origin'de

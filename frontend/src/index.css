@@ -1,0 +1,269 @@
+@import 'tailwindcss';
+
+/* Tailwind v4: koyu tema `.dark` sınıfıyla sürülür (index.html'de ilk boyamadan önce eklenir). */
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Tasarım token'ları.
+ * Açık tema, brief'te verilen palete birebir uyar. Koyu tema, aynı rollerin
+ * WCAG AA kontrastını koruyan karşılıkları olacak şekilde seçildi
+ * (gövde metni #E2E8F0 üzerinde #0B1120 ≈ 15:1, ikincil metin #94A3B8 ≈ 7:1).
+ */
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-foreground: #ffffff;
+  /* Vurgu renginin çok açık zeminlerde kullanılan tonu (seçili satır, aktif menü) */
+  --primary-subtle: #eef2ff;
+
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+  --success-subtle: #dcfce7;
+
+  --warning: #f59e0b;
+  --warning-foreground: #422006;
+  --warning-subtle: #fef3c7;
+
+  --danger: #dc2626;
+  --danger-foreground: #ffffff;
+  --danger-subtle: #fee2e2;
+
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #4f46e5;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: #0b1120;
+  --foreground: #e2e8f0;
+
+  --card: #111a2e;
+  --card-foreground: #e2e8f0;
+
+  --popover: #111a2e;
+  --popover-foreground: #e2e8f0;
+
+  --primary: #6366f1;
+  --primary-hover: #818cf8;
+  --primary-foreground: #ffffff;
+  --primary-subtle: #1e1b4b;
+
+  --secondary: #1e293b;
+  --secondary-foreground: #e2e8f0;
+
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+
+  --accent: #1e293b;
+  --accent-foreground: #e2e8f0;
+
+  --success: #22c55e;
+  --success-foreground: #052e16;
+  --success-subtle: #14321f;
+
+  --warning: #fbbf24;
+  --warning-foreground: #422006;
+  --warning-subtle: #3a2c0a;
+
+  --danger: #f87171;
+  --danger-foreground: #450a0a;
+  --danger-subtle: #3b1616;
+
+  --border: #24314a;
+  --input: #24314a;
+  --ring: #6366f1;
+
+  --sidebar: #0f1728;
+  --sidebar-foreground: #e2e8f0;
+  --sidebar-border: #24314a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-subtle: var(--primary-subtle);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-subtle: var(--success-subtle);
+
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-subtle: var(--warning-subtle);
+
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-danger-subtle: var(--danger-subtle);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --animate-in-fade: fade-in 150ms ease-out;
+  --animate-in-slide: slide-in-right 200ms ease-out;
+}
+
+@layer base {
+  /*
+   * Tailwind v4'te varsayılan kenarlık rengi `currentColor`. Token'a çekiyoruz ki
+   * her bileşende `border-border` yazmak zorunda kalmayalım.
+   */
+  *,
+  ::after,
+  ::before {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-feature-settings:
+      'cv02',
+      'cv03',
+      'cv04',
+      'cv11';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Klavye ile gezinen kullanıcı için görünür, tutarlı odak halkası. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+}
+
+@layer utilities {
+  /* Ekran okuyucuya görünür, gözle görünmez içerik (canlı bölge duyuruları için). */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 9999px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(1rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Hareketten rahatsız olan kullanıcılar için tüm geçişleri kapat. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

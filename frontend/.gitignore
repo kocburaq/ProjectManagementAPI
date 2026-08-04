@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-ssr
+coverage
+*.local
+
+# Gerçek ortam değerleri repoya girmez; .env.example şablon olarak kalır.
+.env
+.env.*
+!.env.example
+
+.DS_Store
+*.log
